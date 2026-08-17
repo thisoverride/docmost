@@ -27,6 +27,7 @@ import {
   setPageTemplate,
 } from "@/features/page/services/page-service.ts";
 import { useClipboard } from "@/hooks/use-clipboard";
+import { queryClient } from "@/main.tsx";
 import { getAppUrl } from "@/lib/config.ts";
 import { useQueryEmit } from "@/features/websocket/use-query-emit.ts";
 import {
@@ -81,7 +82,20 @@ export function NodeMenu({ node, canEdit }: NodeMenuProps) {
   const handleSaveAsTemplate = async () => {
     try {
       await setPageTemplate({ pageId: node.id, isTemplate: true });
-      notifications.show({ message: t("Page saved as template") });
+
+      // La page quitte l'arborescence : on la retire de l'arbre affiche et on
+      // invalide les listes, sinon elle ne disparait qu'au rechargement.
+      setData((prev) => treeModel.remove(prev, node.id));
+      queryClient.removeQueries({
+        predicate: (item) =>
+          ["pages", "sidebar-pages", "root-sidebar-pages"].includes(
+            item.queryKey[0] as string,
+          ),
+      });
+
+      notifications.show({
+        message: t("Page moved to templates"),
+      });
     } catch (err) {
       notifications.show({
         message: t("Failed to save as template"),

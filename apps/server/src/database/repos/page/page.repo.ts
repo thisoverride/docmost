@@ -498,6 +498,9 @@ export class PageRepo {
       )
       .whereRef('child.parentPageId', '=', 'pages.id')
       .where('child.deletedAt', 'is', null)
+      // Les modeles sont hors arborescence : un parent dont le seul enfant
+      // est un modele ne doit pas afficher de fleche d'expansion.
+      .where('child.isTemplate', '=', false)
       .limit(1)
       .as('hasChildren');
   }

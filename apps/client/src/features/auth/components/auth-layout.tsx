@@ -11,13 +11,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     <>
       <Group justify="center" gap={8} className={classes.logo}>
         <img
-          src="/icons/favicon-32x32.png"
-          alt="Docmost"
+          src="/icons/aerith-logo.svg"
+          alt="Aerith"
           width={22}
           height={22}
         />
         <Text size="28px" fw={700} style={{ userSelect: "none" }}>
-          Docmost
+          Aerith
         </Text>
       </Group>
       <main>{children}</main>

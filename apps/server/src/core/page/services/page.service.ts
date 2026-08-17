@@ -309,6 +309,9 @@ export class PageService {
       ])
       .select((eb) => this.pageRepo.withHasChildren(eb))
       .where('deletedAt', 'is', null)
+      // Un modele n'appartient pas a l'arborescence : il vit dans le
+      // selecteur de modeles, pas parmi les pages de l'espace.
+      .where('isTemplate', '=', false)
       .where('spaceId', '=', spaceId);
 
     if (pageId) {
