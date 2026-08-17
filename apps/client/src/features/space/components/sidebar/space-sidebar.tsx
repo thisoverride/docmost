@@ -13,6 +13,7 @@ import {
   IconEyeOff,
   IconFileExport,
   IconHome,
+  IconFileDescription,
   IconPlus,
   IconSearch,
   IconSettings,
@@ -166,49 +167,48 @@ export function SpaceSidebar() {
               SpaceCaslAction.Manage,
               SpaceCaslSubject.Page,
             ) && (
-              <UnstyledButton
-                className={classes.menu}
-                onClick={() => {
-                  handleCreatePage();
-                  if (mobileSidebarOpened) {
-                    toggleMobileSidebar();
-                  }
-                }}
-              >
-                <div className={classes.menuItemInner}>
-                  <IconPlus
-                    size={18}
-                    className={classes.menuItemIcon}
-                    stroke={2}
-                  />
-                  <span>{t("New page")}</span>
-                </div>
-              </UnstyledButton>
+              <Menu shadow="md" position="bottom-start" width={220} withArrow>
+                <Menu.Target>
+                  <UnstyledButton className={classes.menu}>
+                    <div className={classes.menuItemInner}>
+                      <IconPlus
+                        size={18}
+                        className={classes.menuItemIcon}
+                        stroke={2}
+                      />
+                      <span>{t("New page")}</span>
+                    </div>
+                  </UnstyledButton>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<IconFileDescription size={16} />}
+                    onClick={() => {
+                      handleCreatePage();
+                      if (mobileSidebarOpened) {
+                        toggleMobileSidebar();
+                      }
+                    }}
+                  >
+                    {t("Blank page")}
+                  </Menu.Item>
+
+                  <Menu.Item
+                    leftSection={<IconTemplate size={16} />}
+                    onClick={() => {
+                      openPageTemplatePicker();
+                      if (mobileSidebarOpened) {
+                        toggleMobileSidebar();
+                      }
+                    }}
+                  >
+                    {t("From a template")}
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             )}
 
-            {spaceAbility.can(
-              SpaceCaslAction.Manage,
-              SpaceCaslSubject.Page,
-            ) && (
-              <UnstyledButton
-                className={classes.menu}
-                onClick={() => {
-                  openPageTemplatePicker();
-                  if (mobileSidebarOpened) {
-                    toggleMobileSidebar();
-                  }
-                }}
-              >
-                <div className={classes.menuItemInner}>
-                  <IconTemplate
-                    size={18}
-                    className={classes.menuItemIcon}
-                    stroke={2}
-                  />
-                  <span>{t("New page from template")}</span>
-                </div>
-              </UnstyledButton>
-            )}
           </div>
         </div>
 

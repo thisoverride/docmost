@@ -43,6 +43,9 @@ export default function GlobalSidebar() {
       path: "/templates",
       disabled: !hasTemplates,
     },
+    // Espace de gestion des modeles de ce fork, distinct de l'entree ci-dessus
+    // qui reste verrouillee par sa licence.
+    { label: "Page templates", icon: IconTemplate, path: "/page-templates" },
   ];
   const { data: favoriteSpacesData, isPending: isFavoritesPending } = useFavoritesQuery("space");
   const favoriteSpaces = favoriteSpacesData?.pages.flatMap((p) => p.items) ?? [];
