@@ -63,6 +63,10 @@ export class SearchService {
         qb.where('creatorId', '=', searchParams.creatorId),
       )
       .where('deletedAt', 'is', null)
+      // Les modeles vivent dans leur propre espace de gestion : les faire
+      // remonter dans la recherche ramenerait la confusion qu'on a retiree
+      // de l'arborescence.
+      .where('isTemplate', '=', false)
       .orderBy('rank', 'desc')
       .limit(searchParams.limit || 25)
       .offset(searchParams.offset || 0);
@@ -213,6 +217,7 @@ export class SearchService {
           ),
         )
         .where('deletedAt', 'is', null)
+        .where('isTemplate', '=', false)
         .where('workspaceId', '=', workspaceId)
         .limit(limit);
 
