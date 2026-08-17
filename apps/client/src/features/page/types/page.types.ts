@@ -71,6 +71,8 @@ export interface IMovePageToSpace {
 export interface ICopyPageToSpace {
   pageId: string;
   spaceId?: string;
+  // Conserve le titre d'origine : utilise a la creation depuis un modele.
+  keepTitle?: boolean;
 }
 
 export interface SidebarPagesParams {

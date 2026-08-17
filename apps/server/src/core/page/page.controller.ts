@@ -687,6 +687,7 @@ export class PageController {
         copiedPage,
         dto.spaceId,
         user,
+        dto.keepTitle,
       );
 
       this.auditService.log({
@@ -718,6 +719,7 @@ export class PageController {
         copiedPage,
         undefined,
         user,
+        dto.keepTitle,
       );
 
       this.auditService.log({

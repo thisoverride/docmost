@@ -511,6 +511,7 @@ export class PageService {
     rootPage: Page,
     targetSpaceId: string | undefined,
     authUser: User,
+    keepTitle = false,
   ) {
     const spaceId = targetSpaceId || rootPage.spaceId;
     const isDuplicateInSameSpace =
@@ -655,9 +656,10 @@ export class PageService {
 
         const prosemirrorJson = prosemirrorDoc.toJSON();
 
-        // Add "Copy of " prefix to the root page title only for duplicates in same space
+        // Add "Copy of " prefix to the root page title only for duplicates in same space.
+        // keepTitle le supprime : une page issue d'un modele porte le nom du modele.
         let title = page.title;
-        if (isDuplicateInSameSpace && page.id === rootPage.id) {
+        if (!keepTitle && isDuplicateInSameSpace && page.id === rootPage.id) {
           const originalTitle = getPageTitle(page.title);
           title = `Copy of ${originalTitle}`;
         }

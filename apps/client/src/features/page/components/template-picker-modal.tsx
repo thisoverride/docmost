@@ -63,7 +63,11 @@ export default function TemplatePickerModal({
     setCreating(true);
 
     try {
-      const newPage = await duplicatePage({ pageId: template.id, spaceId });
+      const newPage = await duplicatePage({
+        pageId: template.id,
+        spaceId,
+        keepTitle: true,
+      });
 
       queryClient.removeQueries({
         predicate: (item) =>
