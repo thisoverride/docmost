@@ -12,6 +12,7 @@ import {
   IconLink,
   IconStar,
   IconStarFilled,
+  IconTemplate,
   IconTrash,
 } from "@tabler/icons-react";
 
@@ -21,7 +22,10 @@ import CopyPageModal from "@/features/page/components/copy-page-modal.tsx";
 import { useDeletePageModal } from "@/features/page/hooks/use-delete-page-modal.tsx";
 import { buildPageUrl } from "@/features/page/page.utils.ts";
 import { getPageTitle } from "@/features/page/page.utils";
-import { duplicatePage } from "@/features/page/services/page-service.ts";
+import {
+  duplicatePage,
+  setPageTemplate,
+} from "@/features/page/services/page-service.ts";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { getAppUrl } from "@/lib/config.ts";
 import { useQueryEmit } from "@/features/websocket/use-query-emit.ts";
@@ -70,6 +74,20 @@ export function NodeMenu({ node, canEdit }: NodeMenuProps) {
       getAppUrl() + buildPageUrl(spaceSlug, node.slugId, node.name);
     clipboard.copy(pageUrl);
     notifications.show({ message: t("Link copied") });
+  };
+
+  // Le retrait d'un modele se fait depuis le selecteur, qui connait deja la
+  // liste : le noeud d'arbre ne transporte pas l'etat isTemplate.
+  const handleSaveAsTemplate = async () => {
+    try {
+      await setPageTemplate({ pageId: node.id, isTemplate: true });
+      notifications.show({ message: t("Page saved as template") });
+    } catch (err) {
+      notifications.show({
+        message: t("Failed to save as template"),
+        color: "red",
+      });
+    }
   };
 
   const handleDuplicatePage = async () => {
@@ -193,6 +211,17 @@ export function NodeMenu({ node, canEdit }: NodeMenuProps) {
                 }}
               >
                 {t("Duplicate")}
+              </Menu.Item>
+
+              <Menu.Item
+                leftSection={<IconTemplate size={16} />}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSaveAsTemplate();
+                }}
+              >
+                {t("Save as template")}
               </Menu.Item>
 
               <Menu.Item

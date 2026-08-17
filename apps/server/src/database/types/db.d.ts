@@ -322,6 +322,7 @@ export interface Pages {
   isBase: Generated<boolean>;
   baseSchemaVersion: Generated<number>;
   isLocked: Generated<boolean>;
+  isTemplate: Generated<boolean>;
   lastUpdatedById: string | null;
   parentPageId: string | null;
   position: string | null;

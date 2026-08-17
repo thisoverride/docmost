@@ -38,6 +38,7 @@ import { PageRepo } from '@docmost/db/repos/page/page.repo';
 import { RecentPageDto } from './dto/recent-page.dto';
 import { CreatedByUserDto } from './dto/created-by-user.dto';
 import { DuplicatePageDto } from './dto/duplicate-page.dto';
+import { ListTemplatesDto, SetTemplateDto } from './dto/template.dto';
 import { DeletedPageDto } from './dto/deleted-page.dto';
 import { BacklinksListDto } from './dto/backlink.dto';
 import { LabelService } from '../label/label.service';
@@ -618,6 +619,39 @@ export class PageController {
         ...(childPageIds.length > 0 && { childPageIds }),
       },
     });
+  }
+
+  // Marque ou demarque une page comme modele. La duplication depuis un modele
+  // passe par la route 'duplicate' existante : un modele n'est qu'une page
+  // ordinaire signalee, ce qui evite toute logique de copie parallele.
+  @HttpCode(HttpStatus.OK)
+  @Post('set-template')
+  async setTemplate(@Body() dto: SetTemplateDto, @AuthUser() user: User) {
+    const page = await this.pageRepo.findById(dto.pageId);
+    if (!page) {
+      throw new NotFoundException('Page not found');
+    }
+
+    const ability = await this.spaceAbility.createForUser(user, page.spaceId);
+    if (ability.cannot(SpaceCaslAction.Edit, SpaceCaslSubject.Page)) {
+      throw new ForbiddenException();
+    }
+
+    await this.pageRepo.updatePage({ isTemplate: dto.isTemplate }, page.id);
+
+    return { pageId: page.id, isTemplate: dto.isTemplate };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('templates')
+  async listTemplates(
+    @Body() _dto: ListTemplatesDto,
+    @AuthUser() user: User,
+    @AuthWorkspace() workspace: Workspace,
+  ) {
+    // Le filtrage sur les espaces de l'utilisateur est fait dans la requete :
+    // un modele situe dans un espace non accessible n'est jamais expose.
+    return this.pageRepo.getTemplates(workspace.id, user.id);
   }
 
   @HttpCode(HttpStatus.OK)

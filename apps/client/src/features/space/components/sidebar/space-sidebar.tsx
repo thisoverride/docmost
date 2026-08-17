@@ -26,6 +26,7 @@ import {
   useWatchSpaceMutation,
   useUnwatchSpaceMutation,
 } from "@/features/space/queries/space-watcher-query.ts";
+import PageTemplatePickerModal from "@/features/page/components/template-picker-modal";
 import classes from "./space-sidebar.module.css";
 import React from "react";
 import { useAtom } from "jotai";
@@ -65,6 +66,12 @@ export function SpaceSidebar() {
   const location = useLocation();
   const [opened, { open: openSettings, close: closeSettings }] =
     useDisclosure(false);
+  // Selecteur de modeles propre a ce fork : distinct de celui du dossier ee,
+  // qui reste verrouille par sa licence.
+  const [
+    pageTemplatePickerOpened,
+    { open: openPageTemplatePicker, close: closePageTemplatePicker },
+  ] = useDisclosure(false);
   const [mobileSidebarOpened] = useAtom(mobileSidebarAtom);
   const toggleMobileSidebar = useToggleSidebar(mobileSidebarAtom);
 
@@ -178,6 +185,30 @@ export function SpaceSidebar() {
                 </div>
               </UnstyledButton>
             )}
+
+            {spaceAbility.can(
+              SpaceCaslAction.Manage,
+              SpaceCaslSubject.Page,
+            ) && (
+              <UnstyledButton
+                className={classes.menu}
+                onClick={() => {
+                  openPageTemplatePicker();
+                  if (mobileSidebarOpened) {
+                    toggleMobileSidebar();
+                  }
+                }}
+              >
+                <div className={classes.menuItemInner}>
+                  <IconTemplate
+                    size={18}
+                    className={classes.menuItemIcon}
+                    stroke={2}
+                  />
+                  <span>{t("New page from template")}</span>
+                </div>
+              </UnstyledButton>
+            )}
           </div>
         </div>
 
@@ -231,6 +262,12 @@ export function SpaceSidebar() {
         opened={opened}
         onClose={closeSettings}
         spaceId={space?.slug}
+      />
+
+      <PageTemplatePickerModal
+        spaceId={space.id}
+        open={pageTemplatePickerOpened}
+        onClose={closePageTemplatePicker}
       />
     </>
   );

@@ -308,6 +308,21 @@ export class PageRepo {
     });
   }
 
+  // Les modeles sont lus a l'ouverture du selecteur, donc sans pagination :
+  // la liste est courte par nature et l'index partiel la couvre entierement.
+  async getTemplates(workspaceId: string, userId: string) {
+    return this.db
+      .selectFrom('pages')
+      .select(this.baseFields)
+      .select((eb) => this.withSpace(eb))
+      .where('workspaceId', '=', workspaceId)
+      .where('spaceId', 'in', this.spaceMemberRepo.getUserSpaceIdsQuery(userId))
+      .where('isTemplate', '=', true)
+      .where('deletedAt', 'is', null)
+      .orderBy('title', 'asc')
+      .execute();
+  }
+
   async getRecentPagesInSpace(spaceId: string, pagination: PaginationOptions) {
     const query = this.db
       .selectFrom('pages')

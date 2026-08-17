@@ -13,6 +13,7 @@ export interface IPage {
   workspaceId: string;
   isLocked: boolean;
   isBase: boolean;
+  isTemplate: boolean;
   lastUpdatedById: string;
   createdAt: Date;
   updatedAt: Date;

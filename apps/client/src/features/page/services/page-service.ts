@@ -62,6 +62,19 @@ export async function duplicatePage(data: ICopyPageToSpace): Promise<IPage> {
   return req.data;
 }
 
+export async function setPageTemplate(data: {
+  pageId: string;
+  isTemplate: boolean;
+}): Promise<{ pageId: string; isTemplate: boolean }> {
+  const req = await api.post("/pages/set-template", data);
+  return req.data;
+}
+
+export async function getTemplates(): Promise<IPage[]> {
+  const req = await api.post<IPage[]>("/pages/templates", {});
+  return req.data;
+}
+
 export async function getSidebarPages(
   params: SidebarPagesParams,
 ): Promise<IPagination<IPage>> {
