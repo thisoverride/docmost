@@ -38,6 +38,14 @@ async function bootstrap() {
 
   app.useLogger(app.get(PinoLogger));
 
+  // Instance privee : signal d'indexation pose sur toutes les reponses, y
+  // compris non-HTML. C'est le seul signal qui ne depende ni du robots.txt
+  // (que Cloudflare complete de son cote) ni de l'execution du client.
+  app.use((_req: any, res: any, next: any) => {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    next();
+  });
+
   app.setGlobalPrefix('api', {
     exclude: ['robots.txt', 'share/:shareId/p/:pageSlug', 'mcp'],
   });

@@ -12,7 +12,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HelmetProvider } from "react-helmet-async";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import "./i18n";
 import { PostHogProvider } from "posthog-js/react";
 import {
@@ -53,6 +53,10 @@ root.render(
         <QueryClientProvider client={queryClient}>
           <Notifications position="bottom-center" limit={3} zIndex={10000} />
           <HelmetProvider>
+            {/* Filet de securite : une route sans <title> propre, ou dont le
+                titre se reduit a des espaces, laisserait le navigateur
+                afficher l'URL a la place. */}
+            <Helmet defaultTitle="Aerith" />
             <PostHogProvider client={posthog}>
               <App />
             </PostHogProvider>

@@ -111,7 +111,7 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
         }}
       >
         <Helmet>
-          <title>{`${page?.icon || ""}  ${getPageTitle(page?.title, page?.isBase, t)}`}</title>
+          <title>{[page?.icon, getPageTitle(page?.title, page?.isBase, t)].filter(Boolean).join(" ").trim() || "Aerith"}</title>
         </Helmet>
         <MemoizedPageHeader readOnly={!canEdit} />
         <div
@@ -160,7 +160,7 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
     page && (
       <div>
         <Helmet>
-          <title>{`${page?.icon || ""}  ${getPageTitle(page?.title, page?.isBase, t)}`}</title>
+          <title>{[page?.icon, getPageTitle(page?.title, page?.isBase, t)].filter(Boolean).join(" ").trim() || "Aerith"}</title>
         </Helmet>
 
         <MemoizedPageHeader readOnly={!canEdit} />
