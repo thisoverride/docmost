@@ -21,8 +21,10 @@ services:
       - APP_URL=${APP_URL}
       - APP_SECRET=${APP_SECRET}
       - DATABASE_URL=${DATABASE_URL}
-      # Nom de service, resolu sur le reseau prive du projet.
-      - REDIS_URL=redis://redis:6379
+      # Nom explicite : sur le reseau coolify, l'alias « redis »
+      # designe deja l'instance interne de Coolify, protegee par mot de
+      # passe. Un nom generique ici resout vers elle et non vers la notre.
+      - REDIS_URL=redis://docmost-redis:6379
     # Les variables de courrier ne sont volontairement pas listees ici :
     # MAIL_DRIVER n'accepte que smtp ou postmark, une valeur de repli la fait
     # echouer a la validation et le service refuse de demarrer. Elles seront
@@ -30,7 +32,7 @@ services:
     volumes:
       - /opt/app/volumes/docmost/storage:/app/data/storage
     depends_on:
-      redis:
+      docmost-redis:
         condition: service_healthy
     healthcheck:
       test:
@@ -46,7 +48,7 @@ services:
       - default
       - coolify
 
-  redis:
+  docmost-redis:
     image: redis:8-alpine
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
