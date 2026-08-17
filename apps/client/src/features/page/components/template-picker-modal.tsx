@@ -27,12 +27,16 @@ interface TemplatePickerModalProps {
   spaceId: string;
   open: boolean;
   onClose: () => void;
+  // Fourni depuis le « + » d'un noeud de l'arbre : la page creee devient
+  // alors une sous-page de ce noeud plutot qu'une page racine.
+  parentPageId?: string;
 }
 
 export default function TemplatePickerModal({
   spaceId,
   open,
   onClose,
+  parentPageId,
 }: TemplatePickerModalProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -67,6 +71,7 @@ export default function TemplatePickerModal({
         pageId: template.id,
         spaceId,
         keepTitle: true,
+        parentPageId,
       });
 
       queryClient.removeQueries({

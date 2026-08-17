@@ -232,16 +232,34 @@ export function SpaceSidebar() {
                 SpaceCaslAction.Manage,
                 SpaceCaslSubject.Page,
               ) && (
-                <Tooltip label={t("Create page")} withArrow position="right">
-                  <ActionIcon
-                    variant="default"
-                    size={18}
-                    onClick={handleCreatePage}
-                    aria-label={t("Create page")}
-                  >
-                    <IconPlus />
-                  </ActionIcon>
-                </Tooltip>
+                <Menu shadow="md" position="bottom-end" width={220} withArrow>
+                  <Menu.Target>
+                    <Tooltip label={t("Create page")} withArrow position="right">
+                      <ActionIcon
+                        variant="default"
+                        size={18}
+                        aria-label={t("Create page")}
+                      >
+                        <IconPlus />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Menu.Target>
+
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      leftSection={<IconFileDescription size={16} />}
+                      onClick={handleCreatePage}
+                    >
+                      {t("Blank page")}
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<IconTemplate size={16} />}
+                      onClick={() => openPageTemplatePicker()}
+                    >
+                      {t("From a template")}
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               )}
             </Group>
           </Group>
@@ -382,6 +400,16 @@ function SpaceMenu({
                   {t("Templates")}
                 </Menu.Item>
               </Tooltip>
+
+              {/* Gestion des modeles de ce fork : accessible depuis l'espace,
+                  la barre laterale globale n'etant pas affichee ici. */}
+              <Menu.Item
+                component={Link}
+                to="/page-templates"
+                leftSection={<IconTemplate size={16} />}
+              >
+                {t("Page templates")}
+              </Menu.Item>
             </>
           )}
 

@@ -19,6 +19,12 @@ export class DuplicatePageDto {
   @IsOptional()
   @IsBoolean()
   keepTitle?: boolean;
+
+  // Rattache la copie a cette page plutot qu'au parent du modele : sert a
+  // creer une sous-page depuis un modele.
+  @IsOptional()
+  @IsString()
+  parentPageId?: string;
 }
 
 export type CopyPageMapEntry = {

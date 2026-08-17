@@ -515,6 +515,7 @@ export class PageService {
     targetSpaceId: string | undefined,
     authUser: User,
     keepTitle = false,
+    targetParentPageId?: string,
   ) {
     const spaceId = targetSpaceId || rootPage.spaceId;
     const isDuplicateInSameSpace =
@@ -522,7 +523,11 @@ export class PageService {
 
     let nextPosition: string;
 
-    if (isDuplicateInSameSpace) {
+    if (targetParentPageId) {
+      // Creation d'une sous-page depuis un modele : la copie se range a la
+      // fin des enfants du parent vise, pas a cote du modele d'origine.
+      nextPosition = await this.nextPagePosition(spaceId, targetParentPageId);
+    } else if (isDuplicateInSameSpace) {
       // For duplicate in same space, position right after the original page
       nextPosition = generateJitteredKeyBetween(rootPage.position, null);
     } else {
@@ -682,9 +687,11 @@ export class PageService {
           lastUpdatedById: authUser.id,
           parentPageId:
             page.id === rootPage.id
-              ? isDuplicateInSameSpace
-                ? rootPage.parentPageId
-                : null
+              ? targetParentPageId
+                ? targetParentPageId
+                : isDuplicateInSameSpace
+                  ? rootPage.parentPageId
+                  : null
               : page.parentPageId
                 ? pageMap.get(page.parentPageId)?.newPageId
                 : null,

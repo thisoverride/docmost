@@ -2,7 +2,9 @@ import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
-import { ActionIcon, rem } from "@mantine/core";
+import { ActionIcon, Menu, rem } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import TemplatePickerModal from "@/features/page/components/template-picker-modal";
 import {
   IconChevronDown,
   IconChevronRight,
@@ -265,6 +267,8 @@ function CreateNode({
 }: CreateNodeProps) {
   const { t } = useTranslation();
   const { handleCreate } = useTreeMutation(node.spaceId);
+  const [pickerOpened, { open: openPicker, close: closePicker }] =
+    useDisclosure(false);
 
   async function handleClickCreate() {
     if (node.hasChildren && !hasChildren) {
@@ -280,19 +284,47 @@ function CreateNode({
   }
 
   return (
-    <ActionIcon
-      variant="subtle"
-      color="gray"
-      className={classes.actionIcon}
-      aria-label={t("Create subpage of {{name}}", { name: node.name || t("untitled") })}
-      tabIndex={-1}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleClickCreate();
-      }}
-    >
-      <IconPlus style={{ width: rem(20), height: rem(20) }} stroke={2} />
-    </ActionIcon>
+    <>
+      <Menu shadow="md" position="bottom-start" width={220} withArrow>
+        <Menu.Target>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            className={classes.actionIcon}
+            aria-label={t("Create subpage of {{name}}", {
+              name: node.name || t("untitled"),
+            })}
+            tabIndex={-1}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <IconPlus style={{ width: rem(20), height: rem(20) }} stroke={2} />
+          </ActionIcon>
+        </Menu.Target>
+
+        <Menu.Dropdown
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <Menu.Item onClick={() => handleClickCreate()}>
+            {t("Blank page")}
+          </Menu.Item>
+          <Menu.Item onClick={() => openPicker()}>
+            {t("From a template")}
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+
+      <TemplatePickerModal
+        spaceId={node.spaceId}
+        parentPageId={node.id}
+        open={pickerOpened}
+        onClose={closePicker}
+      />
+    </>
   );
 }

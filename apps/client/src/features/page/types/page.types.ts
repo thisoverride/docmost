@@ -73,6 +73,8 @@ export interface ICopyPageToSpace {
   spaceId?: string;
   // Conserve le titre d'origine : utilise a la creation depuis un modele.
   keepTitle?: boolean;
+  // Rattache la copie a cette page : creation d'une sous-page depuis un modele.
+  parentPageId?: string;
 }
 
 export interface SidebarPagesParams {
