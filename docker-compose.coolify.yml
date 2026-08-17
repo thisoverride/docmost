@@ -1,0 +1,72 @@
+# Deploiement Coolify : l'application et son Redis dans une seule ressource.
+#
+# Le docker-compose.yml a la racine est celui d'amont (il embarque son propre
+# Postgres) ; ce fichier-ci decrit le deploiement de dalency-core, ou Postgres
+# est un service partage deja en place.
+#
+# Reseaux : redis vit sur le reseau prive du projet, l'application est en plus
+# rattachee au reseau coolify. C'est ce second rattachement qui lui permet
+# d'atteindre Postgres via la passerelle 10.0.1.1 et d'etre servie par le
+# proxy. Sans lui, DATABASE_URL pointerait vers une passerelle inexistante.
+
+services:
+  docmost:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - APP_URL=${APP_URL}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      # Nom de service, resolu sur le reseau prive du projet.
+      - REDIS_URL=redis://redis:6379
+      - MAIL_DRIVER=${MAIL_DRIVER:-log}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Aerith}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+    volumes:
+      - /opt/app/volumes/docmost/storage:/app/data/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:3000/api/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    networks:
+      - default
+      - coolify
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    # Meme chemin que le conteneur autonome qu'il remplace : les donnees
+    # existantes sont reprises telles quelles.
+    volumes:
+      - /opt/app/volumes/docmost/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - default
+
+networks:
+  default:
+  coolify:
+    external: true
