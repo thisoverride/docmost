@@ -23,14 +23,10 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       # Nom de service, resolu sur le reseau prive du projet.
       - REDIS_URL=redis://redis:6379
-      - MAIL_DRIVER=${MAIL_DRIVER:-log}
-      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-}
-      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Aerith}
-      - SMTP_HOST=${SMTP_HOST:-}
-      - SMTP_PORT=${SMTP_PORT:-}
-      - SMTP_USERNAME=${SMTP_USERNAME:-}
-      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
-      - SMTP_SECURE=${SMTP_SECURE:-false}
+    # Les variables de courrier ne sont volontairement pas listees ici :
+    # MAIL_DRIVER n'accepte que smtp ou postmark, une valeur de repli la fait
+    # echouer a la validation et le service refuse de demarrer. Elles seront
+    # ajoutees une fois le SMTP renseigne.
     volumes:
       - /opt/app/volumes/docmost/storage:/app/data/storage
     depends_on:
